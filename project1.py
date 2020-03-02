@@ -1,4 +1,7 @@
 # author: Nicholas Prayogo
+# simulating crank rocker mechanism with coupler point to produce a path similar to a figure 8
+# Figure 8 theory: Lemniscate of Gerono https://www.mathcurve.com/courbes2d.gb/gerono/gerono.shtml
+
 import numpy as np
 import matplotlib.pyplot as plt
 from math import *
@@ -34,10 +37,6 @@ def calculate_coupler_position(r1, r2, r3, r4, theta2, r6, r7):
     else:
         trajectory_possible = False
         return None, None,None, None, trajectory_possible
-    # except:
-    #     trajectory_possible = False
-    #     return None, None, None, None, trajectory_possible
-        # theta3 = 2 * atan(sqrt(-b - (b**2 - 4 * a * c)) / (2 * d))
 
     r8 = r2 * cos(theta2) + r6 * cos(theta2) - r7 * sin(theta3)
     r9 = r2 * sin(theta2) + r6 * sin(theta2) + r7 * cos(theta3)
@@ -46,7 +45,6 @@ def calculate_coupler_position(r1, r2, r3, r4, theta2, r6, r7):
     r9_2 = r2 * sin(theta2) + r6 * sin(theta3_2) + r7 * cos(theta3_2)
 
     # r_coupler = sqrt(r8**2 + r9**2)
-    #
     # theta_coupler = atan(r9 / r8)
 
     # x_coupler = r8
@@ -89,16 +87,16 @@ if __name__ == "__main__":
                         # only simulate for crank rocker dimensions
                         if ((r2 + r3) < (r4 + r1)) and ((r2+r1+r4) >= r3):
                             # assume r6 is half of r3 (coupler point in the middle)
+                            # r6 = r3/2
+
                             r6_candidates = np.linspace(1,r3,resolution)
                             r1 = np.round(r1,3)
                             r2 = np.round(r2,3)
                             r3 = np.round(r3,3)
                             r4 = np.round(r4,3)
-
                             r7 = np.round(r7,3)
 
                             for r6 in r6_candidates:
-                            # r6 = r3/2
                                 r6 = np.round(r6,3)
                                 coupler_trajectory_polar = []
                                 coupler_trajectory_cartesian_x = []
@@ -110,20 +108,12 @@ if __name__ == "__main__":
                                 for theta2 in theta2_range:
                                     x_coupler, y_coupler,x_coupler2, y_coupler2, trajectory_possible = calculate_coupler_position(
                                         r1, r2, r3, r4, theta2, r6, r7)
-                                    # print(trajectory_possible)
                                     if trajectory_possible:
-                                        # print(theta_coupler)
-                                        # if theta_touse < np.pi/2
-                                        #     theta_touse = theta_coupler
-                                        # r_target = sqrt(r6**2 * cos(2 * theta_touse) * (1 / cos(theta_touse))**4)
+                                        # ensure position within domain of curve
                                         if abs(x_coupler)<=1 :
                                             x_target = x_coupler
+                                            # equation converted from polar to cartesian
                                             y_target = sqrt((x_target**2 - x_target**4))
-                                            # x_target = r_target*cos(theta_touse)
-                                            # y_target = r_target*sin(theta_touse)
-                                            # coupler_trajectory_polar.append(r_coupler)
-                                            # coupler_trajectory_polar.append(r_coupler)
-                                            # target_trajectory_polar.append(r_target)
                                             coupler_trajectory_cartesian_x.append(x_coupler)
                                             coupler_trajectory_cartesian_y.append(y_coupler)
                                             target_trajectory_cartesian_x.append(x_target)
@@ -136,17 +126,17 @@ if __name__ == "__main__":
                                             target_trajectory_cartesian_x.append(x_target2)
                                             target_trajectory_cartesian_y.append(y_target_2)
 
-                                        #
-                                        # except:
-                                        #     # print("trajectory not possible")
-                                        #     trajectory_possible = False
-                                        #     break
-                                    # else:
-                                    #     continue
+                                            # use this for polar
+                                            # if theta_touse < np.pi/2
+                                            #     theta_touse = theta_coupler
+                                                # r_target = sqrt(r6**2 * cos(2 * theta_touse) * (1 / cos(theta_touse))**4)
+                                                # x_target = r_target*cos(theta_touse)
+                                                # y_target = r_target*sin(theta_touse)
+                                                # coupler_trajectory_polar.append(r_coupler)
+                                                # coupler_trajectory_polar.append(r_coupler)
+                                                # target_trajectory_polar.append(r_target)
 
                                 try:
-                                    # if trajectory_possible:
-                                    # print()
                                     if len(target_trajectory_cartesian_x) >=100:
                                         rmse = sqrt(mean_squared_error(target_trajectory_cartesian_y, coupler_trajectory_cartesian_y))
                                         # print(len(target_trajectory_polar),len(coupler_trajectory))
@@ -168,32 +158,19 @@ if __name__ == "__main__":
                                             best_target_trajectory = [target_trajectory_cartesian_x, target_trajectory_cartesian_y]
                                             result = {"dimensions": {"r1":r1, "r2":r2, "r3":r3, "r4":r4, "r6":r6, "r7":r7, }, "rmse":rmse, "max_error":maxerror}
                                             experiment_results.append(result)
-                                            print("Best Result:", result)
-                                            # plt.scatter(target_trajectory_cartesian_x, target_trajectory_cartesian_y, c='r')
-                                            # # plt.show()
-                                            # plt.scatter(coupler_trajectory_cartesian_x, coupler_trajectory_cartesian_y, c= 'b')
-                                            # plt.xlabel("X-coordinate (inches)")
-                                            # plt.ylabel("y-coordinate (inches)")
-                                            # plt.show()
-                                            # print(result)
-                                        else:
-                                            continue
+                                            print("Best Result: ", result)
                                 except:
                                     continue
 
-                        else:
-                            continue
-
     print("Best RMSE: ", best_rmse)
-    print("Best Result:", result)
-    print("Time taken:", print(time.process_time() - start))
+    print("Best Result: ", result)
+    print("Time taken: ", time.process_time() - start)
+
     plt.scatter(best_target_trajectory[0], best_target_trajectory[1], c='r')
     plt.scatter(best_trajectory_cartesian[0], best_trajectory_cartesian[1], c='b')
-
-    # plt.scatter(coupler_trajectory_cartesian_x, coupler_trajectory_cartesian_y, c= 'b')
     plt.xlabel("X-coordinate (inches)")
     plt.ylabel("y-coordinate (inches)")
     plt.show()
-    #
+
     # plt.polar(theta2_range, best_trajectory_polar)
     # plt.show()
