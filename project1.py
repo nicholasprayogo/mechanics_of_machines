@@ -122,123 +122,146 @@ if __name__ == "__main__":
     # r7_candidates = np.linspace(4,10, resolution)
 
     # r2_candidates = np.linspace(min_val,max_val, resolution)
-    r3_candidates = np.linspace(min_val,max_val,  resolution)
-    r4_candidates = np.linspace(min_val,max_val,  resolution)
-    r1_candidates = np.linspace(min_val,max_val,  resolution)
+    # r3_candidates = np.linspace(min_val,max_val,  resolution)
+    # r4_candidates = np.linspace(min_val,max_val,  resolution)
+    # r1_candidates = np.linspace(min_val,max_val,  resolution)
     # r6_candidates = np.linspace(min_val,max_val,  resolution)
     # r7_candidates = np.linspace(min_val,max_val, 2)
 
-    # r3_candidates = [1.599]
-    # r1_candidates = [1.59]
-    # r4_candidates = [1.554]
-    # r7_candidates = [1.1]
+    # 0.3333222225925802, 1e-05, 0.3333222225925802, 0.3333222225925802
+ #    solval = [0.2568888888888889,
+ # 0.00001,
+ # 0.2568888888888889,
+ # 0.22033333333333333,
+ # 0.03755555555555556]
+    # r1_candidates = [solval[0]]
+    # r2_candidates = [solval[1]]
+    # r3_candidates = [solval[2]]
+    # r4_candidates = [solval[3]]
+    # r7_candidates = [solval[4]]
+
+    r3_candidates = [1.599]
+    r1_candidates = [1.59]
+    r4_candidates = [1.554]
+    r7_candidates = [1.1]
     experiment_results = []
     a_given = 4
     best_rmse = 99999999
     start = time.process_time()
 
-    optimal_result = minimize(objective_function, [1, 1, 1, 1], method="BFGS")
+    new_method = False
 
-    print(optimal_result)
-    # counter = 0
-    # for r2 in r2_candidates:
-    #     # print("r2:", r2)
-    #     for r3 in r3_candidates:
-    #         for r4 in r4_candidates:
-    #             for r1 in r1_candidates:
-    #                 for r7 in r7_candidates:
-    #                     # only simulate for crank rocker dimensions
-    #                     if ((r2 + r3) < (r4 + r1)) and ((r2+r1+r4) > r3) and (r3>=r2 and r3>=r1 and r3>=r4):
-    #                         # assume r6 is half of r3 (coupler point in the middle)
-    #                         # r6 = r3/2
-    #
-    #                         r6_candidates = np.linspace(1,r3,resolution)
-    #                         r1 = np.round(r1,3)
-    #                         r2 = np.round(r2,3)
-    #                         r3 = np.round(r3,3)
-    #                         r4 = np.round(r4,3)
-    #                         r7 = np.round(r7,3)
-    #
-    #                         # for r6 in r6_candidates:
-    #                         r6 = 1.0
-    #                         r6 = np.round(r6,3)
-    #                         coupler_trajectory_polar = []
-    #                         coupler_trajectory_cartesian_x = []
-    #                         coupler_trajectory_cartesian_y = []
-    #                         target_trajectory_polar = []
-    #                         target_trajectory_cartesian_x = []
-    #                         target_trajectory_cartesian_y = []
-    #                         trajectory_possible = True
-    #                         for theta2 in theta2_range:
-    #                             x_coupler, y_coupler,x_coupler2, y_coupler2, trajectory_possible = calculate_coupler_position(
-    #                                 r1, r2, r3, r4, theta2, r6, r7)
-    #                             # x_coupler, y_coupler,trajectory_possible = calculate_coupler_position(
-    #                                 # r1, r2, r3, r4, theta2, r6, r7)
-    #                             if trajectory_possible:
-    #                                 # ensure position within domain of curve
-    #                                 # print(x_coupler)
-    #                                 if abs(x_coupler)<=1 :
-    #                                     x_target = x_coupler
-    #                                     # equation converted from polar to cartesian
-    #                                     y_target = sqrt((x_target**2 - x_target**4))
-    #                                     coupler_trajectory_cartesian_x.append(x_coupler)
-    #                                     coupler_trajectory_cartesian_y.append(y_coupler)
-    #                                     target_trajectory_cartesian_x.append(x_target)
-    #                                     target_trajectory_cartesian_y.append(y_target)
-    #
-    #                                 if abs(x_coupler2)<=1:
-    #                                     x_target2 = x_coupler2
-    #                                     y_target_2 = - sqrt((x_target2**2 - x_target2**4))
-    #                                     coupler_trajectory_cartesian_x.append(x_coupler2)
-    #                                     coupler_trajectory_cartesian_y.append(y_coupler2)
-    #                                     target_trajectory_cartesian_x.append(x_target2)
-    #                                     target_trajectory_cartesian_y.append(y_target_2)
-    #
-    #                                     # use this for polar
-    #                                     # if theta_touse < np.pi/2
-    #                                     #     theta_touse = theta_coupler
-    #                                         # r_target = sqrt(r6**2 * cos(2 * theta_touse) * (1 / cos(theta_touse))**4)
-    #                                         # x_target = r_target*cos(theta_touse)
-    #                                         # y_target = r_target*sin(theta_touse)
-    #                                         # coupler_trajectory_polar.append(r_coupler)
-    #                                         # coupler_trajectory_polar.append(r_coupler)
-    #                                         # target_trajectory_polar.append(r_target)
-    #                         try:
-    #                             if len(target_trajectory_cartesian_x) >=80:
-    #                                 # maxy = max(target_trajectory_cartesian_y)
-    #                                 rmse = sqrt(mean_squared_error((target_trajectory_cartesian_y), (coupler_trajectory_cartesian_y)))
-    #                                 # print(len(target_trajectory_polar),len(coupler_trajectory))
-    #                                 maxerror = max_error(target_trajectory_cartesian_y, coupler_trajectory_cartesian_y)
-    #                                 if rmse < best_rmse:
-    #                                     counter+=1
-    #                                     # if counter% 5 == 0:
-    #                                     plt.scatter(target_trajectory_cartesian_x, target_trajectory_cartesian_y, c='r')
-    #                                     plt.scatter(coupler_trajectory_cartesian_x, coupler_trajectory_cartesian_y, c= 'b')
-    #                                     plt.xlabel("X-coordinate (inches)")
-    #                                     plt.ylabel("y-coordinate (inches)")
-    #                                     plt.legend(["Target trajectory", "Coupler trajectory"])
-    #                                     plt.title(f"r1:{r1}, r2:{r2}, r3:{r3}, r4:{r4}, r6:{r6}, r7:{r7}, rmse:{np.round(rmse,3)}, max_error:{np.round(maxerror,3)}")
-    #                                     plt.show()
-    #
-    #                                     best_rmse = rmse
-    #                                     best_trajectory_cartesian = [coupler_trajectory_cartesian_x, coupler_trajectory_cartesian_y]
-    #                                     best_trajectory_polar = coupler_trajectory_polar
-    #                                     best_target_trajectory = [target_trajectory_cartesian_x, target_trajectory_cartesian_y]
-    #                                     result = {"dimensions": {"r1":r1, "r2":r2, "r3":r3, "r4":r4, "r6":r6, "r7":r7, }, "rmse":rmse, "max_error":maxerror}
-    #                                     experiment_results.append(result)
-    #                                     print("Best Result: ", result)
-    #                         except:
-    #                             continue
-    #
-    # print("Best RMSE: ", best_rmse)
-    # print("Best Result: ", result)
-    # print("Time taken: ", time.process_time() - start)
-    #
-    # plt.scatter(best_target_trajectory[0], best_target_trajectory[1], c='r')
-    # plt.scatter(best_trajectory_cartesian[0], best_trajectory_cartesian[1], c='b')
-    # plt.xlabel("X-coordinate (inches)")
-    # plt.ylabel("y-coordinate (inches)")
-    # plt.show()
+    if new_method:
+        optimal_result = minimize(objective_function, [1, 1, 1, 1], method="BFGS")
+        print(optimal_result)
+        print("Time taken: ", time.process_time() - start)
 
-    # plt.polar(theta2_range, best_trajectory_polar)
-    # plt.show()
+    else:
+        counter = 0
+        for r2 in r2_candidates:
+            # print("r2:", r2)
+            for r3 in r3_candidates:
+                for r4 in r4_candidates:
+                    for r1 in r1_candidates:
+                        for r7 in r7_candidates:
+                            # only simulate for crank rocker dimensions
+                            if ((r2 + r3) < (r4 + r1)) and ((r2+r1+r4) > r3) and (r3>=r2 and r3>=r1 and r3>=r4):
+                                # assume r6 is half of r3 (coupler point in the middle)
+                                # r6 = r3/2
+
+
+                                r6_candidates = np.linspace(1,r3,resolution)
+                                r1 = np.round(r1,3)
+                                r2 = np.round(r2,3)
+                                r3 = np.round(r3,3)
+                                r4 = np.round(r4,3)
+                                r7 = np.round(r7,3)
+
+                                # for r6 in r6_candidates:
+                                r6 = 1.0
+                                r6 = np.round(r6,3)
+                                coupler_trajectory_polar = []
+                                coupler_trajectory_cartesian_x = []
+                                coupler_trajectory_cartesian_y = []
+                                target_trajectory_polar = []
+                                target_trajectory_cartesian_x = []
+                                target_trajectory_cartesian_y = []
+                                trajectory_possible = True
+                                for theta2 in theta2_range:
+                                    x_coupler, y_coupler,x_coupler2, y_coupler2, trajectory_possible = calculate_coupler_position(
+                                        r1, r2, r3, r4, theta2, r6, r7)
+                                    # x_coupler, y_coupler,trajectory_possible = calculate_coupler_position(
+                                        # r1, r2, r3, r4, theta2, r6, r7)
+                                    if trajectory_possible:
+                                        # ensure position within domain of curve
+                                        # print(x_coupler)
+                                        if abs(x_coupler)<=1 :
+                                            x_target = x_coupler
+                                            # equation converted from polar to cartesian
+                                            y_target = sqrt((x_target**2 - x_target**4))
+                                            coupler_trajectory_cartesian_x.append(x_coupler)
+                                            coupler_trajectory_cartesian_y.append(y_coupler)
+                                            target_trajectory_cartesian_x.append(x_target)
+                                            target_trajectory_cartesian_y.append(y_target)
+
+                                        if abs(x_coupler2)<=1:
+                                            x_target2 = x_coupler2
+                                            y_target_2 = - sqrt((x_target2**2 - x_target2**4))
+                                            coupler_trajectory_cartesian_x.append(x_coupler2)
+                                            coupler_trajectory_cartesian_y.append(y_coupler2)
+                                            target_trajectory_cartesian_x.append(x_target2)
+                                            target_trajectory_cartesian_y.append(y_target_2)
+
+                                            # use this for polar
+                                            # if theta_touse < np.pi/2
+                                            #     theta_touse = theta_coupler
+                                                # r_target = sqrt(r6**2 * cos(2 * theta_touse) * (1 / cos(theta_touse))**4)
+                                                # x_target = r_target*cos(theta_touse)
+                                                # y_target = r_target*sin(theta_touse)
+                                                # coupler_trajectory_polar.append(r_coupler)
+                                                # coupler_trajectory_polar.append(r_coupler)
+                                                # target_trajectory_polar.append(r_target)
+                                try:
+                                    r6 = r3/2
+                                    plt.scatter(target_trajectory_cartesian_x, target_trajectory_cartesian_y, c='r')
+                                    plt.scatter(coupler_trajectory_cartesian_x, coupler_trajectory_cartesian_y, c= 'b')
+                                    plt.xlabel("X-coordinate (inches)")
+                                    plt.ylabel("y-coordinate (inches)")
+                                    plt.legend(["Target trajectory", "Coupler trajectory"])
+                                    # plt.title(f"r1:{r1}, r2:{r2}, r3:{r3}, r4:{r4}, r6:{r6}, r7:{r7}, rmse:{np.round(rmse,3)}, max_error:{np.round(maxerror,3)}")
+                                    plt.show()
+                                    if len(target_trajectory_cartesian_x) >=80:
+                                        # maxy = max(target_trajectory_cartesian_y)
+                                        rmse = sqrt(mean_squared_error((target_trajectory_cartesian_y), (coupler_trajectory_cartesian_y)))
+                                        # print(len(target_trajectory_polar),len(coupler_trajectory))
+                                        maxerror = max_error(target_trajectory_cartesian_y, coupler_trajectory_cartesian_y)
+                                        if rmse < best_rmse:
+                                            counter+=1
+                                            # if counter% 5 == 0:
+                                            plt.scatter(target_trajectory_cartesian_x, target_trajectory_cartesian_y, c='r')
+                                            plt.scatter(coupler_trajectory_cartesian_x, coupler_trajectory_cartesian_y, c= 'b')
+                                            plt.xlabel("X-coordinate (inches)")
+                                            plt.ylabel("y-coordinate (inches)")
+                                            plt.legend(["Target trajectory", "Coupler trajectory"])
+                                            plt.title(f"r1:{r1}, r2:{r2}, r3:{r3}, r4:{r4}, r6:{r6}, r7:{r7}, rmse:{np.round(rmse,3)}, max_error:{np.round(maxerror,3)}")
+                                            plt.show()
+
+                                            best_rmse = rmse
+                                            best_trajectory_cartesian = [coupler_trajectory_cartesian_x, coupler_trajectory_cartesian_y]
+                                            best_trajectory_polar = coupler_trajectory_polar
+                                            best_target_trajectory = [target_trajectory_cartesian_x, target_trajectory_cartesian_y]
+                                            result = {"dimensions": {"r1":r1, "r2":r2, "r3":r3, "r4":r4, "r6":r6, "r7":r7, }, "rmse":rmse, "max_error":maxerror}
+                                            experiment_results.append(result)
+                                            print("Best Result: ", result)
+                                except:
+                                    continue
+
+        print("Best RMSE: ", best_rmse)
+        print("Best Result: ", result)
+        print("Time taken: ", time.process_time() - start)
+
+        plt.scatter(best_target_trajectory[0], best_target_trajectory[1], c='r')
+        plt.scatter(best_trajectory_cartesian[0], best_trajectory_cartesian[1], c='b')
+        plt.xlabel("X-coordinate (inches)")
+        plt.ylabel("y-coordinate (inches)")
+        plt.show()
